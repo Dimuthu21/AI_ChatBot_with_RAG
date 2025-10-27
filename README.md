@@ -156,10 +156,11 @@ Then open [http://localhost:8501](http://localhost:8501) in your browser.
 
 ## 👨‍💻 Developer Information
 
-**Name:** Dimuthu Shalinda
-**University:** University of Jaffna – Faculty of Engineering
-**Project:** AI Chat Application with RAG
-**Date:** October 2025
+- **Name:** Dimuthu Shalinda  
+- **University:** University of Jaffna – Faculty of Engineering  
+- **Project:** AI Chat Application with RAG  
+- **Date:** October 2025  
+
 
 ---
 
