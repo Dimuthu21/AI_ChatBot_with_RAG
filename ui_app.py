@@ -6,12 +6,12 @@ import io
 import numpy as np
 
 # --- Page Config ---
-st.set_page_config(page_title="AI Chat App", page_icon="🤖", layout="wide")
-st.title("🤖 AI Chat Application")
-st.caption("Powered by Google Gemini 2.0 Flash + MySQL (XAMPP) + RAG System")
-# =========================================================
-# 🧱 SIDEBAR - Chat List with Search + New Chat on Top
-# =========================================================
+st.set_page_config(page_title=" Ragnova", page_icon="⚛", layout="wide")
+st.title("⚛ Ragnova")
+st.caption("The Next-Gen Knowledge Chatbot")
+
+#  SIDEBAR - Chat List with Search + New Chat on Top
+
 st.sidebar.markdown("<h4 style='margin-bottom:10px;'>💬 Chats</h4>", unsafe_allow_html=True)
 
 # --- Search bar ---
@@ -145,14 +145,14 @@ else:
     st.sidebar.info("No chats found.")
 
 
-# =========================================================
+
 # ---------------- Tabs ----------------
-# =========================================================
+
 tabs = st.tabs(["💬 Chat", "📄 RAG"])
 
-# =========================================================
+
 # ---------------- CHAT TAB ----------------
-# =========================================================
+
 with tabs[0]:
     st.markdown("### 💬 Conversation")
 
@@ -173,7 +173,7 @@ with tabs[0]:
     # --- Chat input always rendered LAST ---
     user_input = st.chat_input("Type your message here...")
 
-    if user_input:  #  Only proceed when user actually enters something
+    if user_input:  
         # Add user message to session state first
         st.session_state.history.append({"role": "user", "parts": [user_input]})
         with chat_container:

@@ -12,8 +12,7 @@ def get_connection():
             autocommit=True
         )
 
-        # Show connection info for debugging
-        # st.info(f"🔌 Connected to {conn.server_host}:{conn.server_port} | DB: {conn.database}")
+       
         return conn
 
     except mysql.connector.Error as err:
