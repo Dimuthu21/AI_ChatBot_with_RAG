@@ -1,38 +1,50 @@
-AI Chat Application with RAG (Retrieval-Augmented Generation)
-1. Model and Programming Language Used
+# ⚛  Ragnova (AI Chat Application with RAG)
 
-AI Model: Google Gemini 2.0 Flash (via google-generativeai API)
+## 🧠 Overview
+This project demonstrates the integration of **Google Gemini 2.0 Flash** with a **Retrieval-Augmented Generation (RAG)** pipeline using **Streamlit** and **MySQL (XAMPP)**.  
+It enables real-time chat, document-based Q&A, and keyword-based search — all through a modern and interactive UI.
 
-Embeddings Model: Sentence Transformers (all-MiniLM-L6-v2)
+---
 
-Programming Language: Python 3.10 +
+## 🧩 Technologies Used
 
-Frameworks / Libraries: Streamlit, MySQL (XAMPP), scikit-learn, sentence-transformers, python-dotenv
+| Component | Description |
+|------------|-------------|
+| **AI Model** | Google Gemini 2.0 Flash (via `google-generativeai` API) |
+| **Embeddings Model** | Sentence Transformers – `all-MiniLM-L6-v2` |
+| **Programming Language** | Python 3.10+ |
+| **Frameworks / Libraries** | Streamlit, scikit-learn, sentence-transformers, python-dotenv |
+| **Database** | MySQL (XAMPP) |
 
-2. How to Run the Application
+---
 
-Step 1 – Environment Setup
+## ⚙️ Setup and Installation
 
+### Step 1 – Create Virtual Environment
+```bash
 python -m venv venv
-venv\Scripts\activate
+venv\Scripts\activate        # On Windows
+# or
+source venv/bin/activate     # On macOS/Linux
+Install dependencies:
+
 pip install -r requirements.txt
 
-
 Step 2 – Add Gemini API Key
-Create a file named .env in the project folder and add:
+
+Create a file named .env in the root project folder and include:
 
 GEMINI_API_KEY=your_gemini_api_key_here
 
-
 Step 3 – Set Up MySQL Database
 
-Start XAMPP → MySQL
+Start XAMPP → Launch MySQL
 
 Open phpMyAdmin
 
 Create a database named ai_chat
 
-Run:
+Run this SQL command:
 
 CREATE TABLE conversations (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -41,96 +53,113 @@ CREATE TABLE conversations (
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-
-Step 4 – Run the App
-
+Step 4 – Run the Application
 streamlit run ui_app.py
 
 
-Then open the link (usually http://localhost:8501
-).
+Then open http://localhost:8501
+ in your browser.
 
-3. How the System Uses the Text File
+💬 Application Modes
+🗨️ Chat Mode
 
-The RAG tab enables document-based Q&A:
+Open the Chat tab
 
-The user uploads a .txt file.
+Type a message → click Send
 
-The system splits the text into overlapping chunks.
+Gemini 2.0 Flash replies instantly
 
-Each chunk is embedded using a transformer model.
+Every chat session is saved in the MySQL database
 
-When the user asks a question, the app finds the most similar chunks by cosine similarity.
+📄 RAG Mode
 
-Those chunks are passed to Gemini 2.0 Flash as context.
+Open the RAG tab
 
-Gemini answers only using that content.
+Upload a .txt file and click Start Conversation
 
-The interface displays:
+Ask questions directly from the document
 
-The generated answer
+The system retrieves the most relevant text chunks using cosine similarity
 
-Relevant text sections (highlighted)
+Gemini generates context-aware answers
 
-Similarity / relevance scores
+You can view:
 
-Options to search, export chat, and reload file
+Highlighted relevant sections
 
-4. How to Use the Application
-Chat Mode
+Similarity scores
 
-Open Chat tab
+Keyword search results
 
-Type a message and press Send
+Options to Export Chat or Reload File
 
-Gemini replies instantly
+🔍 How RAG Works
 
-Each chat is saved in the MySQL database
+The uploaded .txt file is split into overlapping text chunks
 
-RAG Mode
+Each chunk is embedded using the Sentence Transformer model
 
-Open RAG tab
+When a question is asked:
 
-Upload a .txt file → click Build Index
+The system finds top-matching chunks using cosine similarity
 
-Ask questions about the document
+These chunks are passed as context to Gemini 2.0 Flash
 
-View answers, relevant sections, and similarity scores
+Gemini generates a response using only that relevant content
 
-Use search to locate keywords
+Results are displayed with highlighted context and relevance indicators
 
-Export chat history or replace file when needed
-
-5. Screenshots (Working System)
+📸 Screenshots
 Chat Interface
 
 RAG Interface – Question 1
 
 RAG Interface – Question 2
 
-MySQL Database View (XAMPP)
+💡 Ensure that your screenshots are located in a folder named ss inside the main project directory.
 
-6. Deliverables Checklist
+project_folder/
+│
+├── ui_app.py
+├── rag_engine.py
+├── chat_logic.py
+├── db_config.py
+├── ss/
+│   ├── chat_interface.png
+│   ├── rag_interface_1.png
+│   ├── rag_interface_2.png
+
+✅ Deliverables Checklist
 Item	Status
 Source Code (GitHub / ZIP)	✔️
 Short README File	✔️
-Working AI Chat + RAG Application	✔️
-Screenshots of System	✔️
-7. Developer Information
+Working AI Chat + RAG App	✔️
+Screenshots Included	✔️
+👨‍💻 Developer Information
 
-Name: R.D.D.S Rajamuni.
+Name: Dimuthu Shalinda
 University: University of Jaffna – Faculty of Engineering
 Project: AI Chat Application with RAG
 Date: October 2025
 
-8. Summary
+🏁 Summary
 
-This project demonstrates:
+This project highlights:
 
-Integration of Google Gemini API with Streamlit UI
+Real-time chat integration with Google Gemini 2.0 Flash
 
-Implementation of a Retrieval-Augmented Generation pipeline
+A complete Retrieval-Augmented Generation (RAG) workflow
 
-Real-time chat logging in MySQL
+Persistent chat logging through MySQL
 
-Optional features: highlighted context, similarity score, keyword search, export chat, replace file, and token usage display
+Advanced functionality including:
+
+Highlighted context visualization
+
+Similarity scoring
+
+Keyword-based search
+
+Chat export and file reload options
+
+This system demonstrates the potential of combining LLM reasoning with retrieval-based document grounding, serving as a foundation for intelligent, data-driven applications.
