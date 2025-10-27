@@ -13,9 +13,25 @@ def get_connection():
         )
 
         # Show connection info for debugging
-        st.info(f"🔌 Connected to {conn.server_host}:{conn.server_port} | DB: {conn.database}")
+        # st.info(f"🔌 Connected to {conn.server_host}:{conn.server_port} | DB: {conn.database}")
         return conn
 
     except mysql.connector.Error as err:
         st.error(f"❌ MySQL connection failed: {err}")
         return None
+def create_chat_session(title="New Chat"):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO chat_sessions (title) VALUES (%s)", (title,))
+    conn.commit()
+    chat_id = cursor.lastrowid
+    conn.close()
+    return chat_id
+
+
+def update_chat_title(chat_id, new_title):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE chat_sessions SET title=%s WHERE id=%s", (new_title, chat_id))
+    conn.commit()
+    conn.close()
