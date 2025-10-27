@@ -1,4 +1,4 @@
-# 🤖 AI Chat Application with RAG (Retrieval-Augmented Generation)
+# ⚛ Ragnova (AI Chat Application with RAG)
 
 ## 🧠 Overview
 This project demonstrates the integration of **Google Gemini 2.0 Flash** with a **Retrieval-Augmented Generation (RAG)** pipeline using **Streamlit** and **MySQL (XAMPP)**.  
@@ -156,7 +156,7 @@ Then open [http://localhost:8501](http://localhost:8501) in your browser.
 
 ## 👨‍💻 Developer Information
 
-**Name:** R. D. D. S. Rajamuni
+**Name:** Dimuthu Shalinda
 **University:** University of Jaffna – Faculty of Engineering
 **Project:** AI Chat Application with RAG
 **Date:** October 2025
@@ -179,7 +179,4 @@ This project highlights:
 
 This system combines **LLM reasoning** with **retrieval-based knowledge grounding**, demonstrating how modern AI can deliver accurate, context-aware responses from custom documents.
 
-```
 
-4. After pushing, your README will automatically render with images and sections on your repository’s home page. ✅
-```
