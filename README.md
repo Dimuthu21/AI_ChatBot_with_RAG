@@ -1,8 +1,3 @@
-I understand you want a complete `README.md` file as a downloadable file. Since I cannot directly provide a downloadable file, I'll give you the full, corrected content of the `README.md` based on your previous input, completing any incomplete sections and ensuring it’s ready to be saved as a file. You can copy this content into a text editor (e.g., Notepad, VS Code) and save it as `README.md`, or follow the instructions below to create it programmatically.
-
-### Complete README.md Content
-
-```markdown
 # ⚛ Ragnova (AI Chat Application with RAG)
 
 ## 🧠 Overview
