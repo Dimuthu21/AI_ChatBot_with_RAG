@@ -211,13 +211,11 @@ with tabs[0]:
 
     st.caption("💬 Feel free to chat! Your conversation is saved automatically.")
 
-# =========================================================
-# ---------------- RAG TAB ----------------
-# =========================================================
+        # ---------------- RAG TAB ----------------
 with tabs[1]:
-    uploaded_file = st.file_uploader("Upload a text file", type=["txt"])
+    st.markdown("### 📄 Upload and Chat with Your File")
 
-    # Initialize RAG session states
+    # --- Initialize RAG session states ---
     defaults = {
         "rag_ready": False, "rag_chunks": [], "rag_embeddings": None,
         "rag_index": None, "rag_history": []
@@ -226,89 +224,137 @@ with tabs[1]:
         if k not in st.session_state:
             st.session_state[k] = v
 
-    # --- File upload and index building ---
-    if uploaded_file:
-        text = uploaded_file.read().decode("utf-8")
-        if st.button("📂 Build Index"):
-            with st.spinner("Processing file..."):
-                st.session_state.rag_chunks = chunk_text(text)
-                idx, emb = build_index(st.session_state.rag_chunks)
-                st.session_state.rag_index = idx
-                st.session_state.rag_embeddings = emb
-                st.session_state.rag_ready = True
-                st.session_state.rag_history = []
-                st.success(f"✅ Index built with {len(st.session_state.rag_chunks)} chunks")
+    # --- Two main columns: Left (Chat) | Right (Search) ---
+    col_left, col_right = st.columns([2.3, 1])
 
-    # --- Once RAG is ready ---
-    if st.session_state.rag_ready:
-        st.markdown("### 💬 Ask about your uploaded file")
+    # ---------------------------------------------------
+    # 🟩 LEFT SIDE – Chat and Conversation Area
+    # ---------------------------------------------------
+    with col_left:
+        uploaded_file = st.file_uploader("📁 Upload a text file", type=["txt"])
 
-        # Container for all chat messages
-        rag_container = st.container()
+        # Build index / Start conversation
+        if uploaded_file and not st.session_state.rag_ready:
+            text = uploaded_file.read().decode("utf-8")
+            st.markdown("<br>", unsafe_allow_html=True)
+            col_center = st.columns([1, 1, 1])
+            with col_center[1]:
+                if st.button("💬 Start Conversation", use_container_width=True):
+                    with st.spinner("Preparing your file..."):
+                        st.session_state.rag_chunks = chunk_text(text)
+                        idx, emb = build_index(st.session_state.rag_chunks)
+                        st.session_state.rag_index = idx
+                        st.session_state.rag_embeddings = emb
+                        st.session_state.rag_ready = True
+                        st.session_state.rag_history = []
+                        st.success("✅ Ready! You can now ask questions below.")
 
-        # --- Chat input stays BELOW conversation ---
-        query = st.chat_input("Ask a question about the uploaded file...")
+        # Conversation area
+        if st.session_state.rag_ready:
+            st.markdown("### 💬 Ask about your uploaded file")
 
-        if query:
-            # Generate AI answer first
-            with st.spinner("Retrieving relevant sections..."):
-                results = search_similar(
-                    query,
-                    st.session_state.rag_chunks,
-                    st.session_state.rag_embeddings,
-                    st.session_state.rag_index,
-                    top_k=3
+            # Chat container
+            rag_container = st.container()
+            query = st.chat_input("Ask a question about the uploaded file...")
+
+            if query:
+                with st.spinner("Retrieving relevant sections..."):
+                    results = search_similar(
+                        query,
+                        st.session_state.rag_chunks,
+                        st.session_state.rag_embeddings,
+                        st.session_state.rag_index,
+                        top_k=3
+                    )
+                    context_text = "\n\n".join([c for c, _ in results])
+                    prompt = (
+                        f"Answer only using the following context:\n{context_text}\n\n"
+                        f"Question: {query}\n\n"
+                        f"If the answer is not in the context, say: "
+                        f"'Sorry, I cannot find that information in the provided file.'"
+                    )
+                    answer = get_ai_response(prompt)
+                    token_est = int(len(prompt) / 4)
+
+                st.session_state.rag_history.append({
+                    "q": query,
+                    "a": answer,
+                    "sources": results,
+                    "tokens": token_est
+                })
+
+            # Display all conversation
+            with rag_container:
+                for msg in st.session_state.rag_history:
+                    with st.chat_message("user"):
+                        st.markdown(msg["q"])
+                    with st.chat_message("assistant"):
+                        st.markdown(msg["a"])
+                        with st.expander("📌 Source Sections"):
+                            for c, score in msg["sources"]:
+                                st.markdown(f"**Relevance:** {round(score,3)}")
+                                st.info(c)
+
+            # Export chat option
+            if st.session_state.rag_history:
+                buffer = io.StringIO()
+                for h in st.session_state.rag_history:
+                    buffer.write(f"Q: {h['q']}\nA: {h['a']}\n\n")
+                st.download_button(
+                    "⬇️ Export Chat",
+                    buffer.getvalue(),
+                    "rag_chat_history.txt",
+                    mime="text/plain",
+                    use_container_width=True
                 )
-                context_text = "\n\n".join([c for c, _ in results])
-                prompt = (
-                    f"Answer only using the following context:\n{context_text}\n\n"
-                    f"Question: {query}\n\n"
-                    f"If the answer is not in the context, say: "
-                    f"'Sorry, I cannot find that information in the provided file.'"
+
+ # ---------------------------------------------------
+# 🟦 RIGHT SIDE – File Controls on Top, Search Below
+# ---------------------------------------------------
+with col_right:
+    # --- FILE CONTROL FIRST ---
+    st.markdown("### ⚙️ File Controls")
+    st.caption("Reload or replace your uploaded file to start a fresh session.")
+
+    if st.button("🔄 Reload File", use_container_width=True):
+        for k in ["rag_ready", "rag_chunks", "rag_embeddings", "rag_index", "rag_history", "search_term"]:
+            st.session_state[k] = defaults[k] if k in defaults else ""
+        st.rerun()
+
+
+    st.divider()
+
+    # --- SEARCH BELOW ---
+    st.markdown("### 🔍 Search in File")
+    st.caption("Find exactly where a keyword or sentence appears in your uploaded document.")
+
+    search_term = st.text_input("Enter a word or phrase to search", key="search_term")
+
+    if search_term and st.session_state.rag_chunks:
+        matches_found = 0
+        import re
+        for idx, chunk in enumerate(st.session_state.rag_chunks):
+            pattern = re.compile(re.escape(search_term), re.IGNORECASE)
+            if pattern.search(chunk):
+                matches_found += 1
+                highlighted = pattern.sub(
+                    lambda m: f"<mark style='background-color: #ffe66d; color:black;'>{m.group(0)}</mark>",
+                    chunk
                 )
-                answer = get_ai_response(prompt)
-                token_est = int(len(prompt) / 4)
 
-            # ✅ Append full QA pair at once
-            st.session_state.rag_history.append({
-                "q": query,
-                "a": answer,
-                "sources": results,
-                "tokens": token_est
-            })
+                words = chunk.split()
+                match_index = next((i for i, w in enumerate(words) if search_term.lower() in w.lower()), 0)
+                start = max(0, match_index - 20)
+                end = min(len(words), match_index + 20)
+                preview = " ".join(words[start:end])
 
-        # --- Display all conversation (after any new QA added) ---
-        with rag_container:
-            for msg in st.session_state.rag_history:
-                with st.chat_message("user"):
-                    st.markdown(msg["q"])
-                with st.chat_message("assistant"):
-                    st.markdown(msg["a"])
-                    with st.expander("📌 Source Sections"):
-                        for c, score in msg["sources"]:
-                            st.markdown(f"**Relevance:** {round(score,3)}")
-                            st.info(c)
-                    st.caption(f"Approx tokens used: {msg['tokens']}")
+                with st.expander(f"📍 Found in part {idx+1}"):
+                    st.markdown(highlighted, unsafe_allow_html=True)
+                    st.markdown(f"**Preview:** …{preview}…", unsafe_allow_html=True)
 
-        # --- Extra tools ---
-        if st.session_state.rag_history:
-            buffer = io.StringIO()
-            for h in st.session_state.rag_history:
-                buffer.write(f"Q: {h['q']}\nA: {h['a']}\n\n")
-            st.download_button("⬇️ Export Chat History", buffer.getvalue(), "rag_history.txt")
-
-        st.markdown("### 🔍 Search keyword in uploaded file")
-        search_term = st.text_input("Enter keyword to search")
-        if search_term:
-            matches = [c for c in st.session_state.rag_chunks if search_term.lower() in c.lower()]
-            if matches:
-                st.write(f"Found {len(matches)} match(es):")
-                for m in matches[:5]:
-                    st.info(m)
-            else:
-                st.warning("No matches found.")
-
-        if st.button("🔄 Replace File"):
-            for k in ["rag_ready", "rag_chunks", "rag_embeddings", "rag_index", "rag_history"]:
-                st.session_state[k] = defaults[k]
-            st.rerun()
+        if matches_found == 0:
+            st.warning("No matches found.")
+        else:
+            st.info(f"Found **{matches_found}** occurrence(s) of '{search_term}'.")
+    else:
+        st.caption("Type a word to start searching.")
